@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard1.6;net40;net45;net46</TargetFrameworks>
+    <RootNamespace>Lyra</RootNamespace>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Authors>Kbiosystems</Authors>
+    <Company>Kbiosystems</Company>
+    <Description>A .NET core implementation for using Lyra boards via a CAN interface</Description>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+    <Version>0.5.0</Version>
+  </PropertyGroup>
+
+  <Target Name="PostcompileScript" AfterTargets="Build" Condition=" '$(IsCrossTargetingBuild)' != 'true' ">
+    <Exec Command="dotnet pack --no-build" />
+  </Target>
+  
+</Project>
