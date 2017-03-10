@@ -1,6 +1,8 @@
 ﻿using Lyra.Events;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Text;
 
 namespace Lyra
@@ -30,6 +32,19 @@ namespace Lyra
         public SaciaBoard(int address, ICanController controller) 
             : base(address, controller)
         { }
+
+        public virtual void SetSpeed(int speed, int rampUp, int rampDown)
+        {
+            byte[] data = new byte[8] { 0x02, 0x00, GetByte(speed, 0), GetByte(speed, 1), GetByte(rampUp, 0), GetByte(rampUp, 1), GetByte(rampDown, 0), GetByte(rampDown, 1), };
+            Debug.WriteLine("Speed - " + string.Join(" ", data.Select(d => d.ToString("X2"))));
+            SendMessage(data);
+        }
+
+        public virtual void SetCurrent(int runCurrent, int holdCurrent)
+        {
+            byte[] data = new byte[8] { 0x03, 0x00, GetByte(holdCurrent, 0), GetByte(holdCurrent, 1), GetByte(runCurrent, 0), GetByte(runCurrent, 1), 0x00, 0x00, };
+            SendMessage(data);
+        }
 
         internal override void Parse(byte[] data)
         {
@@ -91,6 +106,12 @@ namespace Lyra
                     MotorStopped?.Invoke(this);
                 }
             }
+        }
+
+        private byte GetByte(int integer, int index)
+        {
+            byte b = BitConverter.GetBytes(integer)[index];
+            return b;
         }
     }
 }
