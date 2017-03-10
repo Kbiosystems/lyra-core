@@ -8,7 +8,7 @@
     <Company>Kbiosystems</Company>
     <Description>A .NET core implementation for using Lyra boards via a CAN interface</Description>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
-    <Version>0.5.0</Version>
+    <Version>0.9.0</Version>
   </PropertyGroup>
 
   
