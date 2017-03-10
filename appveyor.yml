@@ -4,7 +4,7 @@
     only:
       - master
 
-  os: Visual Studio 2015
+  os: Visual Studio 2017
   configuration: Debug
   build:
     project: Lyra.Core.sln
