@@ -11,8 +11,5 @@
     <Version>0.5.0</Version>
   </PropertyGroup>
 
-  <Target Name="PostcompileScript" AfterTargets="Build" Condition=" '$(IsCrossTargetingBuild)' != 'true' ">
-    <Exec Command="dotnet pack --no-build" />
-  </Target>
   
 </Project>
