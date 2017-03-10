@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard1.6;net40;net45;net46</TargetFrameworks>
     <RootNamespace>Lyra</RootNamespace>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <Authors>Kbiosystems</Authors>
     <Company>Kbiosystems</Company>
     <Description>A .NET core implementation for using Lyra boards via a CAN interface</Description>
