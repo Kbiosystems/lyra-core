@@ -12,9 +12,3 @@ Write-Host "Installing .NET Core SDK..."
 Invoke-Command -ScriptBlock { ./dotnet-core-sdk.exe /S /v/qn }
 
 Write-Host "Installation succeeded." -ForegroundColor Green
-
-#-------------------------------
-# Run Net Core Build
-#-------------------------------
-
-./build.cmd
