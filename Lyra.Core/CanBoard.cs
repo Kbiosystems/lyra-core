@@ -9,6 +9,8 @@ namespace Lyra
     {
         protected internal ICanController _controller;
 
+        internal abstract Int32 Range { get; }
+
         public int Address { get; private set; }
 
         public InputChangedEventHandler InputChanged;
@@ -24,30 +26,14 @@ namespace Lyra
         {
             controller.MessageRecieved += (s, m) =>
             {
-                if (m.Address == ((0x600 | (Address << 4)) | 8))
+                if (m.Address == ((Range | (Address << 4)) | 8))
                 {
                     Parse(m.Data);
                 }
             };
         }
 
-        public virtual void Enable()
-        {
-            byte[] data = new byte[8] { 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
-            SendMessage(data);
-        }
-
-        public virtual void Zero()
-        {
-            byte[] data = new byte[8] { 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
-            SendMessage(data);
-        }
-
-        public virtual void Reset()
-        {
-            byte[] data = new byte[8] { 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
-            SendMessage(data);
-        }
+        
 
         public void SendMessage(byte[] data)
         {
