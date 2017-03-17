@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Lyra
+namespace LyraElectronics
 {
     public class CanMessage
     {

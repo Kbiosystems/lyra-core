@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lyra.Events
+namespace LyraElectronics.Events
 {
     public delegate void OutputChangedEventHandler(object sender, OutputChangedEventArgs eventArgs);
 }

@@ -1,11 +1,11 @@
-﻿using Lyra.Events;
+﻿using LyraElectronics.Events;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace Lyra
+namespace LyraElectronics
 {
     public delegate void MotorStartedEventHandler(object sender);
     public delegate void MotorStoppedEventHandler(object sender);

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lyra.Core", "Lyra.Core\Lyra.Core.csproj", "{3B4E4713-1C86-401A-AC2E-A20CA263AC6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lyra.Core", "LyraElectronics.Core\LyraElectronics.Core.csproj", "{3B4E4713-1C86-401A-AC2E-A20CA263AC6F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

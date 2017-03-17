@@ -13,10 +13,10 @@
   build_script:
   - ps: .\build.ps1
   build:
-    project: Lyra.Core.sln
+    project: LyraElectronics.Core.sln
     verbosity: minimal
   artifacts:
-  - path: '**\Lyra.Core.*.nupkg'
+  - path: '**\LyraElectronics.Core.*.nupkg'
 
   version: 0.9.0-ci{build}
   deploy:
