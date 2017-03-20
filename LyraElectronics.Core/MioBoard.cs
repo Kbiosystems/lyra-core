@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lyra
+namespace LyraElectronics
 {
     public class MioBoard : CanBoard
     {
