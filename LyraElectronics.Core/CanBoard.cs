@@ -37,7 +37,7 @@ namespace LyraElectronics
 
         public void SendMessage(byte[] data)
         {
-            _controller?.SendMessage(new CanMessage((0x600 | (Address << 4)), 8, data));
+            _controller?.SendMessage(new CanMessage((Range | (Address << 4)), 8, data));
         }
 
         internal abstract void Parse(byte[] data);
