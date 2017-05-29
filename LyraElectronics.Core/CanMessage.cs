@@ -20,7 +20,7 @@ namespace LyraElectronics
 
         public override string ToString()
         {
-            return "ID: " + Convert.ToString(Address, 16) + " Data: " + string.Join(" ", Data.Select(d => Convert.ToString(d, 16)));
+            return Convert.ToString(Address, 16) + " " + Convert.ToString(DataLength, 16) + " " + string.Join(" ", Data.Select(d => Convert.ToString(d, 16)));
         }
 
     }
