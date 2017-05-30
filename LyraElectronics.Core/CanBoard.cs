@@ -24,7 +24,9 @@ namespace LyraElectronics
         public CanBoard(int address, ICanController controller)
             : this (address)
         {
-            controller.CanMessageRecieved += (s, m) =>
+            _controller = controller;
+
+            _controller.CanMessageRecieved += (s, m) =>
             {
                 if (m.Address == ((Range | (Address << 4)) | 8))
                 {
