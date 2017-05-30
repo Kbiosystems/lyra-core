@@ -4,12 +4,21 @@
     <TargetFrameworks>netstandard1.6;netcoreapp1.0;net40;net45;net46</TargetFrameworks>
     <RootNamespace>LyraElectronics</RootNamespace>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Authors>Kbiosystems</Authors>
     <Company>Kbiosystems</Company>
     <Description>A .NET core implementation for using Lyra boards via a CAN interface</Description>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <Version>0.9.0</Version>
+    <PackageLicenseUrl>https://github.com/Kbiosystems/lyra-core/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Kbiosystems/lyra-core</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Kbiosystems/lyra-core</RepositoryUrl>
   </PropertyGroup>
 
-  
+  <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
+    <ItemGroup>
+      <DocFile Include="bin\$(Configuration)\$(TargetFramework)\*.xml" />
+    </ItemGroup>
+    <Copy SourceFiles="@(DocFile)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="false" />
+  </Target>
 </Project>
