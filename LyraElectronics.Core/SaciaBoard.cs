@@ -209,9 +209,9 @@ namespace LyraElectronics
                 OutputChanged?.Invoke(this, new OutputChangedEventArgs(3, !Output3, Output3));
             }
 
-            if (Running != (data[5] & 0x81) > 0)
+            if (Running != (data[5] & 0x01) > 0)
             {
-                Running = (data[5] & 0x81) > 0;
+                Running = (data[5] & 0x01) > 0;
                 if (Running)
                 {
                     MotorStarted?.Invoke(this);
