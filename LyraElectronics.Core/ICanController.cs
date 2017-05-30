@@ -7,7 +7,7 @@ namespace LyraElectronics
 {
     public interface ICanController
     {
-        event CanMessageRecievedEventHandler MessageRecieved;
+        event CanMessageRecievedEventHandler CanMessageRecieved;
         void OpenChannel(int baudRate = 250);
         void CloseChannel();
         void SendMessage(CanMessage message);
