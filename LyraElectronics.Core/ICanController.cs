@@ -1,14 +1,14 @@
-﻿using System;
+﻿using LyraElectronics.Events;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace LyraElectronics
 {
-    public delegate void MessageRecievedEventHandler(object sender, CanMessage message);
     public interface ICanController
     {
-        event MessageRecievedEventHandler MessageRecieved;
-        void OpenChannel(int baudRate);
+        event CanMessageRecievedEventHandler MessageRecieved;
+        void OpenChannel(int baudRate = 250);
         void CloseChannel();
         void SendMessage(CanMessage message);
     }
