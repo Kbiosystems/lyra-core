@@ -7,9 +7,6 @@ using System.Text;
 
 namespace LyraElectronics
 {
-    public delegate void MotorStartedEventHandler(object sender);
-    public delegate void MotorStoppedEventHandler(object sender);
-
     public class SaciaBoard : CanBoard
     {
         internal override int Range { get { return 0x600; } }
@@ -26,11 +23,18 @@ namespace LyraElectronics
         public bool CurrentNotSet { get; private set; }
         public bool HomeNotSet { get; private set; }
         public bool OverTemperature { get; private set; }
-        public bool Running { get; set; }
+        public bool Running { get; private set; }
 
+        public event InputChangedEventHandler InputChanged;
+        public event OutputChangedEventHandler OutputChanged;
         public event MotorStartedEventHandler MotorStarted;
         public event MotorStoppedEventHandler MotorStopped;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SaciaBoard"/> class.
+        /// </summary>
+        /// <param name="address">The address.</param>
+        /// <param name="controller">The controller.</param>
         public SaciaBoard(int address, ICanController controller) 
             : base(address, controller)
         { }
@@ -161,7 +165,7 @@ namespace LyraElectronics
             SendMessage(data);
         }
 
-        internal override void Parse(byte[] data)
+        protected internal override void Parse(byte[] data)
         {
             Position = (((int)data[3]) << 32) | (((int)data[2]) << 16) | (((int)data[1]) << 8) | (int)data[0];
 
@@ -216,7 +220,7 @@ namespace LyraElectronics
                 {
                     MotorStarted?.Invoke(this);
                 }
-                if (!Running)
+                else
                 {
                     MotorStopped?.Invoke(this);
                 }

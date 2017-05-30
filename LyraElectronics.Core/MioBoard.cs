@@ -12,7 +12,7 @@ namespace LyraElectronics
             : base(address, controller)
         { }
 
-        internal override void Parse(byte[] data)
+        protected internal override void Parse(byte[] data)
         {
             throw new NotImplementedException();
         }
