@@ -7,8 +7,15 @@ using System.Text;
 
 namespace LyraElectronics
 {
+    /// <summary>
+    ///     
+    /// </summary>
+    /// <seealso cref="LyraElectronics.CanBoard" />
     public class SaciaBoard : CanBoard
     {
+        /// <summary>
+        ///     The hex addressing range of the board.
+        /// </summary>
         internal override int Range { get { return 0x600; } }
 
         public int Position { get; private set; }

@@ -7,8 +7,19 @@ namespace LyraElectronics
 {
     public class CanMessage
     {
+        /// <summary>
+        /// Gets the data.
+        /// </summary>
         public byte[] Data { get; private set; }
+
+        /// <summary>
+        /// Gets the address.
+        /// </summary>
         public int Address { get; private set; }
+
+        /// <summary>
+        /// Gets the length of the data.
+        /// </summary>
         public int DataLength { get; private set; }
 
         public CanMessage(int address, int dataLength, byte[] data)
