@@ -18,18 +18,87 @@ namespace LyraElectronics
         /// </summary>
         internal override int Range { get { return 0x600; } }
 
+        /// <summary>
+        ///     The current motor position.
+        /// </summary>
         public int Position { get; private set; }
+
+        /// <summary>
+        ///     The current value of the first input.
+        /// </summary>
         public bool Input1 { get; private set; }
+
+        /// <summary>
+        ///     The current value of the second input.
+        /// </summary>
         public bool Input2 { get; private set; }
+
+        /// <summary>
+        ///     The current value of the third input.
+        /// </summary>
         public bool Input3 { get; private set; }
+
+        /// <summary>
+        ///     The current value of the first output.
+        /// </summary>
         public bool Output1 { get; private set; }
+
+        /// <summary>
+        ///     The current value of the second output.
+        /// </summary>
         public bool Output2 { get; private set; }
+
+        /// <summary>
+        ///     The current value of the third output.
+        /// </summary>
         public bool Output3 { get; private set; }
+
+        /// <summary>
+        ///     Indicates whether this <see cref="SaciaBoard"/> is disabled.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if disabled; otherwise, <c>false</c>.
+        /// </value>
         public bool Disabled { get; private set; }
-        public bool SpeedNotSet { get; private set; }
-        public bool CurrentNotSet { get; private set; }
-        public bool HomeNotSet { get; private set; }
+
+        /// <summary>
+        ///     Indicates whether [speed set].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [speed set]; otherwise, <c>false</c>.
+        /// </value>
+        public bool SpeedSet { get; private set; }
+
+        /// <summary>
+        ///     Indicates whether [current set].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [current set]; otherwise, <c>false</c>.
+        /// </value>
+        public bool CurrentSet { get; private set; }
+
+        /// <summary>
+        ///     Indicates whether [home set].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [home set]; otherwise, <c>false</c>.
+        /// </value>
+        public bool HomeSet { get; private set; }
+
+        /// <summary>
+        ///     Indicates whether [over temperature].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [over temperature]; otherwise, <c>false</c>.
+        /// </value>
         public bool OverTemperature { get; private set; }
+
+        /// <summary>
+        ///     Indicates whether the <see cref="SaciaBoard"/> motor is running.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if motor running; otherwise, <c>false</c>.
+        /// </value>
         public bool Running { get; private set; }
 
         public event InputChangedEventHandler InputChanged;
@@ -38,16 +107,21 @@ namespace LyraElectronics
         public event MotorStoppedEventHandler MotorStopped;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SaciaBoard"/> class.
+        ///     Initializes a new instance of the <see cref="SaciaBoard"/> class.
         /// </summary>
-        /// <param name="address">The address.</param>
-        /// <param name="controller">The controller.</param>
-        public SaciaBoard(int address, ICanController controller) 
-            : base(address, controller)
+        /// <param name="sequenceNumber">
+        ///     The CAN board sequence number as an integer 
+        ///     representation of its binary dip switch position
+        /// </param>
+        /// <param name="controller">
+        ///     The <see cref="ICanController"/> associated with this board. 
+        /// </param>
+        public SaciaBoard(int sequenceNumber, ICanController controller) 
+            : base(sequenceNumber, controller)
         { }
 
         /// <summary>
-        /// Enable this board.
+        ///     Send <see cref="CanMessage"/> to enable this board.
         /// </summary>
         public void Enable()
         {
@@ -56,7 +130,8 @@ namespace LyraElectronics
         }
 
         /// <summary>
-        /// Set the board motor positions to zero.
+        ///     Send <see cref="CanMessage"/> to set the 
+        ///     board motor positions to zero.
         /// </summary>
         public void Zero()
         {
@@ -65,7 +140,8 @@ namespace LyraElectronics
         }
 
         /// <summary>
-        /// Resets this instance.
+        ///     Send <see cref="CanMessage"/> to reset 
+        ///     this <see cref="SaciaBoard"/> state.
         /// </summary>
         public void Reset()
         {
@@ -74,14 +150,15 @@ namespace LyraElectronics
         }
 
         /// <summary>
-        /// Set the motor speed.
+        ///     Send <see cref="CanMessage"/> to set the motor 
+        ///     speed, acceleration and deceleration.
         /// </summary>
-        /// <param name="speed">The speed.</param>
-        /// <param name="rampUp">The acceleration.</param>
-        /// <param name="rampDown">The decceleration</param>
-        public void SetSpeed(int speed, int rampUp, int rampDown)
+        /// <param name="speed">The motor speed.</param>
+        /// <param name="acceleration">The motor acceleration.</param>
+        /// <param name="deceleration">The motor decceleration</param>
+        public void SetMovementProperties(int speed, int acceleration, int deceleration)
         {
-            byte[] data = new byte[8] { 0x02, 0x00, GetByte(speed, 0), GetByte(speed, 1), GetByte(rampUp, 0), GetByte(rampUp, 1), GetByte(rampDown, 0), GetByte(rampDown, 1), };
+            byte[] data = new byte[8] { 0x02, 0x00, GetByte(speed, 0), GetByte(speed, 1), GetByte(acceleration, 0), GetByte(acceleration, 1), GetByte(deceleration, 0), GetByte(deceleration, 1), };
             Debug.WriteLine("Speed - " + string.Join(" ", data.Select(d => d.ToString("X2"))));
             SendMessage(data);
         }
@@ -181,14 +258,18 @@ namespace LyraElectronics
             SendMessage(data);
         }
 
+        /// <summary>
+        ///     Parse the specified CAN data
+        /// </summary>
+        /// <param name="data">The data to parse.</param>
         protected internal override void Parse(byte[] data)
         {
             Position = (((int)data[3]) << 32) | (((int)data[2]) << 16) | (((int)data[1]) << 8) | (int)data[0];
 
             Disabled = (data[5] & 0x80) > 0;
-            SpeedNotSet = (data[5] & 0x40) > 0;
-            CurrentNotSet = (data[5] & 0x20) > 0;
-            HomeNotSet = (data[5] & 0x10) > 0;
+            SpeedSet = !((data[5] & 0x40) > 0);
+            CurrentSet = !((data[5] & 0x20) > 0);
+            HomeSet = !((data[5] & 0x10) > 0);
             OverTemperature = (data[5] & 0x82) > 0;
 
             // set inputs and invoke input changed event where applicable

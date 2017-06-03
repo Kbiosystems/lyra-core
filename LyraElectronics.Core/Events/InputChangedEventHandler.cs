@@ -5,7 +5,7 @@ using System.Text;
 namespace LyraElectronics.Events
 {
     /// <summary>
-    ///     Handles <see cref="CanBoard"/> input changed events.
+    ///     Delegate for <see cref="CanBoard"/> input changed events.
     /// </summary>
     /// <param name="sender">
     ///     The object invoking the event.

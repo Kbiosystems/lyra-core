@@ -5,7 +5,7 @@ using System.Text;
 namespace LyraElectronics.Events
 {
     /// <summary>
-    ///     Handles CAN message recieved inside the <see cref="ICanController"/> imlpementation.
+    ///     Delegate for CAN message recieved inside the <see cref="ICanController"/> imlpementation.
     /// </summary>
     /// <param name="sender">
     ///     The object invoking the event.
