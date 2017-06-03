@@ -64,6 +64,9 @@ namespace LyraElectronics
             SendMessage(data);
         }
 
+        /// <summary>
+        /// Resets this instance.
+        /// </summary>
         public void Reset()
         {
             byte[] data = new byte[8] { 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
@@ -109,12 +112,18 @@ namespace LyraElectronics
             SendMessage(data);
         }
 
+        /// <summary>
+        /// Polls this instance.
+        /// </summary>
         public void Poll()
         {
             byte[] data = new byte[8] { 0x0A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
             SendMessage(data);
         }
 
+        /// <summary>
+        /// Nones this instance.
+        /// </summary>
         public void None()
         {
             byte[] data = new byte[8] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
