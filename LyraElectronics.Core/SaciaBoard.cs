@@ -8,7 +8,8 @@ using System.Text;
 namespace LyraElectronics
 {
     /// <summary>
-    ///     
+    ///     An implementation of the <see cref="CanBoard"/> 
+    ///     class for the Sacia hardware.
     /// </summary>
     /// <seealso cref="LyraElectronics.CanBoard" />
     public class SaciaBoard : CanBoard
@@ -101,9 +102,24 @@ namespace LyraElectronics
         /// </value>
         public bool Running { get; private set; }
 
+        /// <summary>
+        ///     Occurs when [input changed].
+        /// </summary>
         public event InputChangedEventHandler InputChanged;
+
+        /// <summary>
+        ///     Occurs when [output changed].
+        /// </summary>
         public event OutputChangedEventHandler OutputChanged;
+
+        /// <summary>
+        ///     Occurs when [motor started].
+        /// </summary>
         public event MotorStartedEventHandler MotorStarted;
+
+        /// <summary>
+        ///     Occurs when [motor stopped].
+        /// </summary>
         public event MotorStoppedEventHandler MotorStopped;
 
         /// <summary>
@@ -164,10 +180,11 @@ namespace LyraElectronics
         }
 
         /// <summary>
-        /// The the motor hold and run currents
+        ///     Send <see cref="CanMessage"/> to set 
+        ///     the motor hold and run currents
         /// </summary>
-        /// <param name="runCurrent">The run current.</param>
-        /// <param name="holdCurrent">The hold current.</param>
+        /// <param name="runCurrent">The motor run current.</param>
+        /// <param name="holdCurrent">The motor hold current.</param>
         public void SetCurrent(int runCurrent, int holdCurrent)
         {
             byte[] data = new byte[8] { 0x03, 0x00, GetByte(holdCurrent, 0), GetByte(holdCurrent, 1), GetByte(runCurrent, 0), GetByte(runCurrent, 1), 0x00, 0x00, };
@@ -175,7 +192,8 @@ namespace LyraElectronics
         }
 
         /// <summary>
-        /// Set specified output to on/off
+        ///     Send <see cref="CanMessage"/> to set 
+        ///     the specified output to on/off
         /// </summary>
         /// <param name="output">The output to set</param>
         /// <param name="value">The output value. If true, on, else off</param>
@@ -190,7 +208,7 @@ namespace LyraElectronics
         }
 
         /// <summary>
-        /// Polls this instance.
+        ///     Send <see cref="CanMessage"/> to poll this board.
         /// </summary>
         public void Poll()
         {
@@ -199,7 +217,7 @@ namespace LyraElectronics
         }
 
         /// <summary>
-        /// Nones this instance.
+        ///     Send <see cref="CanMessage"/> to reset all inputs/outputs
         /// </summary>
         public void None()
         {
@@ -208,7 +226,8 @@ namespace LyraElectronics
         }
 
         /// <summary>
-        /// Goto the specified motor position.
+        ///     Send <see cref="CanMessage"/> to 
+        ///     goto the specified motor position.
         /// </summary>
         /// <param name="position">The motor position to goto.</param>
         public virtual void Goto(int position)
@@ -219,7 +238,8 @@ namespace LyraElectronics
         }
 
         /// <summary>
-        /// Run the motor for a specified number of steps.
+        ///     Send <see cref="CanMessage"/> to run the 
+        ///     motor for a specified number of steps.
         /// </summary>
         /// <param name="steps">The number of steps to run.</param>
         public void Run(int steps)  
@@ -228,7 +248,9 @@ namespace LyraElectronics
         }
 
         /// <summary>
-        /// Run the motor until an input is set to specified value or to a maximum number of steps.
+        ///     Send <see cref="CanMessage"/> to run the motor
+        ///     until an input is set to specified value or 
+        ///     to a maximum number of steps.
         /// </summary>
         /// <param name="stopInput">The input to watch.</param>
         /// <param name="stopLogic">The value of the input to stop on.</param>
@@ -250,7 +272,7 @@ namespace LyraElectronics
         }
 
         /// <summary>
-        /// Stop the motor. Terminates movement.
+        ///     Send <see cref="CanMessage"/> to stop the motor. Terminates movement.
         /// </summary>
         public void Stop()
         {
@@ -310,6 +332,7 @@ namespace LyraElectronics
                 OutputChanged?.Invoke(this, new OutputChangedEventArgs(3, !Output3, Output3));
             }
 
+            // set running value and invoke stop/start events
             if (Running != (data[5] & 0x01) > 0)
             {
                 Running = (data[5] & 0x01) > 0;
