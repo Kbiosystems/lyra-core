@@ -5,23 +5,49 @@ using System.Text;
 
 namespace LyraElectronics
 {
+    /// <summary>
+    ///     The CAN message class representing the CAN 
+    ///     message revieved or ready to send.
+    /// </summary>
     public class CanMessage
     {
         /// <summary>
-        /// Gets the data.
+        ///     The CAN message data.
         /// </summary>
         public byte[] Data { get; private set; }
 
         /// <summary>
-        /// Gets the address.
+        ///     The CAN message target address (this is not 
+        ///     the board sequence number specified by the 
+        ///     <see cref="CanBoard"/> class).
         /// </summary>
+        /// <remarks>
+        ///     Please note the message address will be 
+        ///     different depending on the direction the 
+        ///     message is going
+        /// </remarks>
         public int Address { get; private set; }
 
         /// <summary>
-        /// Gets the length of the data.
+        ///     The length of the CAN message data byte[] array
         /// </summary>
         public int DataLength { get; private set; }
 
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="CanMessage"/> class.
+        /// </summary>
+        /// <param name="address">
+        ///     The CAN message target address (this is not 
+        ///     the board sequence number specified by the 
+        ///     <see cref="CanBoard"/> class).
+        /// </param>
+        /// <param name="dataLength">
+        ///     The length of the CAN message data byte[] array
+        /// </param>
+        /// <param name="data">
+        ///     The CAN message data.
+        /// </param>
         public CanMessage(int address, int dataLength, byte[] data)
         {
             Data = data;
@@ -29,6 +55,13 @@ namespace LyraElectronics
             Address = address;
         }
 
+
+        /// <summary>
+        ///     Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        ///     A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
             return Convert.ToString(Address, 16) + " " + Convert.ToString(DataLength, 16) + " " + string.Join(" ", Data.Select(d => Convert.ToString(d, 16)));
