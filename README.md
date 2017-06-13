@@ -8,4 +8,52 @@ To use the source code you will need at least Visual Studio 2015 and the latest 
 
 ## Getting Started
 
+### Implement ICanController
+
+ The `ICanController` is critically responsible for listening to the CAN messages being polled across the CAN line and parsing those messages into `CanMmessage` objects. Those objects are then fired across on the `CanMessageRecievedEvent`. The `CanBoard`s listen on this event to parse their status. As such it is critically important that this event is fired by the `ICanController` implementation.
+
+ The `ICanController` interface should be implemented based on the type of CAN controller being used and will look something like the code below.
+
+```csharp
+    public sealed class CanController : ICanController
+    {
+        // fire in listener methods
+        public event CanMessageRecievedEventHandler CanMessageRecieved;
+
+        public void CloseChannel()
+        {
+            // close the CAN channel
+        }
+
+        public void OpenChannel(int baudRate = 250)
+        {
+            // open the CAN channel
+        }
+
+        public void SendMessage(CanMessage message)
+        {
+            // Send CAN message
+        }
+
+    }
+
+```
+
+### Using the CanBoard Classes
+
+When creating the `CanBoard` class, the object should be passed the `ICanController` where it will subscribe to the CanMessageRecieved event internally.
+
+```csharp
+SaciaBoard board = new SaciaBoard(2, _controller);
+
+board.SetMovementProperties(1000, 80, 80);
+board.SetCurrent(1200, 100);
+board.Zero();
+
+board.Run(4000);
+```
+
 ## Acknowledgements
+
+* Thank you to [Lyra](http://www.lyraelectronics.com) for providing the boards/documentation and valuable feedback/support
+* A big thank you to [Biosero](http://www.biosero.com) for their field work and feedback.
