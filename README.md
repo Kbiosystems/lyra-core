@@ -49,6 +49,7 @@ SaciaBoard board = new SaciaBoard(2, _controller);
 board.SetMovementProperties(1000, 80, 80);
 board.SetCurrent(1200, 100);
 board.Zero();
+board.Enable();
 
 board.Run(4000);
 ```
