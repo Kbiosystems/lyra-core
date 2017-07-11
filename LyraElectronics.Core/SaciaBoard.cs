@@ -105,22 +105,22 @@ namespace LyraElectronics
         /// <summary>
         ///     Occurs when [input changed].
         /// </summary>
-        public event InputChangedEventHandler InputChanged;
+        public event EventHandler<InputChangedEventArgs> InputChanged;
 
         /// <summary>
         ///     Occurs when [output changed].
         /// </summary>
-        public event OutputChangedEventHandler OutputChanged;
+        public event EventHandler<OutputChangedEventArgs> OutputChanged;
 
         /// <summary>
         ///     Occurs when [motor started].
         /// </summary>
-        public event MotorStartedEventHandler MotorStarted;
+        public event EventHandler<MotorStartedEventArgs> MotorStarted;
 
         /// <summary>
         ///     Occurs when [motor stopped].
         /// </summary>
-        public event MotorStoppedEventHandler MotorStopped;
+        public event EventHandler<MotorStoppedEventArgs> MotorStopped;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SaciaBoard"/> class.
@@ -338,11 +338,11 @@ namespace LyraElectronics
                 Running = (data[5] & 0x01) > 0;
                 if (Running)
                 {
-                    MotorStarted?.Invoke(this);
+                    MotorStarted?.Invoke(this, new MotorStartedEventArgs());
                 }
                 else
                 {
-                    MotorStopped?.Invoke(this);
+                    MotorStopped?.Invoke(this, new MotorStoppedEventArgs());
                 }
             }
         }

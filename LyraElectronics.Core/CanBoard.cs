@@ -37,6 +37,11 @@ namespace LyraElectronics
         public int SequenceNumber { get; private set; }
 
         /// <summary>
+        ///     Ocurrs when a CAN message is recieved and processed by this <see cref="CanBoard"/> object.
+        /// </summary>
+        public event EventHandler<CanMessageRecievedEventArgs> MessageRecieved;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="CanBoard"/> class.
         /// </summary>
         /// <param name="sequenceNumber">
@@ -65,9 +70,11 @@ namespace LyraElectronics
 
             _controller.CanMessageRecieved += (s, m) =>
             {
-                if (m.Address == ((Range | (SequenceNumber << 4)) | 8))
+                if (m.Message.Address == ((Range | (SequenceNumber << 4)) | 8))
                 {
-                    Parse(m.Data);
+                    Parse(m.Message.Data);
+
+                    MessageRecieved.Invoke(this, new CanMessageRecievedEventArgs(m.Message));
                 }
             };
         }
