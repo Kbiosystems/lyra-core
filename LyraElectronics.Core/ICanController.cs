@@ -14,7 +14,7 @@ namespace LyraElectronics
         /// <summary>
         ///     Ocurrs when a CAN message is recieved.
         /// </summary>
-        event CanMessageRecievedEventHandler CanMessageRecieved;
+        event EventHandler<CanMessageRecievedEventArgs> CanMessageRecieved;
 
         /// <summary>
         ///     Opens the CAN channel. Baud rate defaults to 
