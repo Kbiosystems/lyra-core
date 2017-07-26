@@ -11,10 +11,10 @@ namespace LyraElectronics
     public abstract class CanBoard
     {
         /// <summary>
-        ///     The <see cref="ICanController"/> implementation 
+        ///     The <see cref="CanController"/> implementation 
         ///     associated with this board.
         /// </summary>
-        protected internal ICanController _controller;
+        protected internal CanController _controller;
 
         /// <summary>
         ///     An Int32 representation of hexadecimal addressing 
@@ -37,11 +37,6 @@ namespace LyraElectronics
         public int SequenceNumber { get; private set; }
 
         /// <summary>
-        ///     Ocurrs when a CAN message is recieved and processed by this <see cref="CanBoard"/> object.
-        /// </summary>
-        public event EventHandler<CanMessageRecievedEventArgs> MessageRecieved;
-
-        /// <summary>
         ///     Initializes a new instance of the <see cref="CanBoard"/> class.
         /// </summary>
         /// <param name="sequenceNumber">
@@ -61,22 +56,20 @@ namespace LyraElectronics
         ///     representation of its binary dip switch position
         /// </param>
         /// <param name="controller">
-        ///     The <see cref="ICanController"/> associated with this board. 
+        ///     The <see cref="CanController"/> associated with this board. 
         /// </param>
-        public CanBoard(int sequenceNumber, ICanController controller)
+        public CanBoard(int sequenceNumber, CanController controller)
             : this (sequenceNumber)
         {
             _controller = controller;
 
-            _controller.CanMessageRecieved += (s, m) =>
+            _controller.RegisterMessageRecievedAction((sender, message) =>
             {
-                if (m.Message.Address == ((Range | (SequenceNumber << 4)) | 8))
+                if (message.Address == ((Range | (SequenceNumber << 4)) | 8))
                 {
-                    Parse(m.Message.Data);
-
-                    MessageRecieved.Invoke(this, new CanMessageRecievedEventArgs(m.Message));
+                    Parse(message.Data);
                 }
-            };
+            });
         }
 
         /// <summary>

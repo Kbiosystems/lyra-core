@@ -9,7 +9,7 @@
     <Company>Kbiosystems</Company>
     <Description>A .NET core implementation for using Lyra boards via a CAN interface</Description>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <PackageLicenseUrl>https://github.com/Kbiosystems/lyra-core/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/Kbiosystems/lyra-core</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Kbiosystems/lyra-core</RepositoryUrl>

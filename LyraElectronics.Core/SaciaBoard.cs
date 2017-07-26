@@ -130,9 +130,9 @@ namespace LyraElectronics
         ///     representation of its binary dip switch position
         /// </param>
         /// <param name="controller">
-        ///     The <see cref="ICanController"/> associated with this board. 
+        ///     The <see cref="CanController"/> associated with this board. 
         /// </param>
-        public SaciaBoard(int sequenceNumber, ICanController controller) 
+        public SaciaBoard(int sequenceNumber, CanController controller) 
             : base(sequenceNumber, controller)
         { }
 
