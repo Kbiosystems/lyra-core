@@ -67,5 +67,18 @@ namespace LyraElectronics
             return Convert.ToString(Address, 16) + " " + Convert.ToString(DataLength, 16) + " " + string.Join(" ", Data.Select(d => Convert.ToString(d, 16)));
         }
 
+
+        public static CanMessage Parse(byte[] bytes)
+        {
+            int id = int.Parse(Encoding.ASCII.GetString(bytes.SubArray(0, 3)), System.Globalization.NumberStyles.HexNumber);
+            int length = int.Parse(Encoding.ASCII.GetString(bytes.SubArray(3, 1)), System.Globalization.NumberStyles.HexNumber);
+            List<byte> data = new List<byte>();
+            for (int j = 4; j < 4 + (length * 2); j += 2)
+            {
+                data.Add(byte.Parse(Encoding.ASCII.GetString(bytes.SubArray(j, 2)), System.Globalization.NumberStyles.HexNumber));
+            }
+
+            return new CanMessage(id, length, data.ToArray());
+        }
     }
 }
