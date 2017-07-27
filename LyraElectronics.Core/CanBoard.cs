@@ -63,13 +63,13 @@ namespace LyraElectronics
         {
             _controller = controller;
 
-            _controller.RegisterMessageRecievedAction((sender, message) =>
+            _controller.CanMessageRecieved += (sender, args) =>
             {
-                if (message.Address == ((Range | (SequenceNumber << 4)) | 8))
+                if (args.Message.Address == ((Range | (SequenceNumber << 4)) | 8))
                 {
-                    Parse(message.Data);
+                    Parse(args.Message.Data);
                 }
-            });
+            };
         }
 
         /// <summary>

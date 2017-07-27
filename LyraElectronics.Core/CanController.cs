@@ -11,8 +11,6 @@ namespace LyraElectronics
     /// </summary>
     public abstract class CanController
     {
-        private List<Action<object, CanMessage>> messageRecievedActions;
-
         /// <summary>
         ///     Ocurrs when a CAN message is recieved.
         /// </summary>
@@ -50,30 +48,9 @@ namespace LyraElectronics
         /// <param name="message">
         ///     The <see cref="CanMessage"/> received.
         /// </param>
-        protected void OnCanMessageRecieved(CanMessage message)
+        protected virtual void OnCanMessageRecieved(CanMessage message)
         {
-            messageRecievedActions.ForEach((a) =>
-            {
-                a.Invoke(this, message);
-            });
-
             CanMessageRecieved?.Invoke(this, new CanMessageRecievedEventArgs(message));
-        }
-
-        /// <summary>
-        ///     Registers the message recieved action from the can boards.
-        /// </summary>
-        /// <param name="onMessageRecieved">
-        ///     The action to execute when a message is recieved.
-        /// </param>
-        internal void RegisterMessageRecievedAction(Action<object, CanMessage> onMessageRecieved)
-        {
-            if (messageRecievedActions == null)
-            {
-                messageRecievedActions = new List<Action<object, CanMessage>>();
-            }
-
-            messageRecievedActions.Add(onMessageRecieved);
         }
     }
 }
