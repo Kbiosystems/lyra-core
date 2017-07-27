@@ -67,7 +67,17 @@ namespace LyraElectronics
             return Convert.ToString(Address, 16) + " " + Convert.ToString(DataLength, 16) + " " + string.Join(" ", Data.Select(d => Convert.ToString(d, 16)));
         }
 
-
+        /// <summary>
+        ///     Converts the btye[] representation of a 
+        ///     can message to a <see cref="CanMessage"/> 
+        ///     object equivalent.
+        /// </summary>
+        /// <param name="bytes">
+        ///     The byte array to parse.
+        /// </param>
+        /// <returns>
+        ///     The parsed <see cref="CanMessage" /> object.
+        /// </returns>
         public static CanMessage Parse(byte[] bytes)
         {
             int id = int.Parse(Encoding.ASCII.GetString(bytes.SubArray(0, 3)), System.Globalization.NumberStyles.HexNumber);
