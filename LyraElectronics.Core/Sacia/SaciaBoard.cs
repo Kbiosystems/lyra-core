@@ -122,6 +122,7 @@ namespace LyraElectronics.Sacia
             : base(sequenceNumber, controller)
         {
             Inputs = new SaciaInputs();
+            Outputs = new SaciaOutputs();
         }
 
         /// <summary>
