@@ -192,6 +192,28 @@ namespace LyraElectronics.Sacia
             bool out2 = output == 1 ? value : Outputs.Output2;
             bool out3 = output == 2 ? value : Outputs.Output3;
 
+            SetOutputs(out1, out2, out3);
+        }
+
+        /// <summary>
+        ///     Send <see cref="CanMessage"/> to set 
+        ///     all outputs to on/off
+        /// </summary>
+        /// <param name="value">The output value. If true, on, else off</param>
+        public void SetAllOutputs(bool value)
+        {
+            SetOutputs(value, value, value);
+        }
+
+        /// <summary>
+        ///     Send <see cref="CanMessage"/> to set 
+        ///     the specified outputs to on/off
+        /// </summary>
+        /// <param name="out1">The output value for output 1. If true, on, else off</param>
+        /// <param name="out2">The output value for output 2. If true, on, else off</param>
+        /// <param name="out3">The output value for output 3. If true, on, else off</param>
+        public void SetOutputs(bool out1, bool out2, bool out3)
+        {
             byte[] data = new byte[8] { 0x04, 0x00, (byte)(out1 ? 0x01 : 0x00), (byte)(out2 ? 0x01 : 0x00), (byte)(out3 ? 0x01 : 0x00), 0x00, 0x00, 0x00, };
             SendMessage(data);
         }
