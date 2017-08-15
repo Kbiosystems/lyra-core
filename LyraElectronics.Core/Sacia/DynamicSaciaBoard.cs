@@ -6,14 +6,36 @@ using System.Text;
 
 namespace LyraElectronics.Sacia
 {
+    /// <summary>
+    ///    A dynamically addressed version of 
+    ///    the <see cref="SaciaBoard"/> class.
+    /// </summary>
+    /// <seealso cref="LyraElectronics.Sacia.SaciaBoard" />
     public class DynamicSaciaBoard : SaciaBoard
     {
         private int[] PotentialSequenceNumbers;
 
+        /// <summary>
+        ///     Occurs when the sequence number changed.
+        /// </summary>
         public event EventHandler<SequenceNumberChangedEventArgs> SequenceNumberChanged;
 
-        public DynamicSaciaBoard(int initialSequenceNumber, int[] listenForSequenceNumbers, CanController controller)
-            : base(initialSequenceNumber, controller)
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="DynamicSaciaBoard"/> class.
+        /// </summary>
+        /// <param name="defaultSequenceNumber">
+        ///     The initial CAN board sequence number as an integer 
+        ///     representation of its binary dip switch position to
+        ///     listen for.
+        /// </param>
+        /// <param name="listenForSequenceNumbers">
+        ///     The sequence numbers to listen for.
+        /// </param>
+        /// <param name="controller">
+        ///     The <see cref="CanController"/> associated with this board. 
+        /// </param>
+        public DynamicSaciaBoard(int defaultSequenceNumber, int[] listenForSequenceNumbers, CanController controller)
+            : base(defaultSequenceNumber, controller)
         {
             PotentialSequenceNumbers = listenForSequenceNumbers;
 
