@@ -34,7 +34,7 @@ namespace LyraElectronics
         ///     Mio board with the same numeric sequence number. Regarding dip 
         ///     switches see the individual Lyra board documentation.
         /// </remarks>
-        public int SequenceNumber { get; private set; }
+        public int SequenceNumber { get; internal set; }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="CanBoard"/> class.
