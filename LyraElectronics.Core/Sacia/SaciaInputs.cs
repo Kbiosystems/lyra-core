@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace LyraElectronics.Sacia
@@ -45,7 +46,17 @@ namespace LyraElectronics.Sacia
         /// </value>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        public bool this[int index] { get { return inputs[index]; } }
+        public bool this[int index]
+        {
+            get
+            {
+                if (index < 0 || index > 2)
+                {
+                    throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "An input at index {0} does not exist.", index.ToString()));
+                }
+                return inputs[index];
+            }
+        }
 
         /// <summary>
         /// Gets the enumerator.
