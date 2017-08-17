@@ -255,7 +255,7 @@ namespace LyraElectronics.Sacia
         /// <param name="steps">The number of steps to run.</param>
         public void Run(int steps)  
         {
-            Run(0, false, steps);          
+            Run(steps, -1, false);          
         }
 
         /// <summary>
@@ -265,20 +265,20 @@ namespace LyraElectronics.Sacia
         /// </summary>
         /// <param name="stopInput">The input to watch.</param>
         /// <param name="stopLogic">The value of the input to stop on.</param>
-        /// <param name="maximumSteps">The maximum steps to run.</param>
-        public void Run(int stopInput, bool stopLogic, int maximumSteps)
+        /// <param name="steps">The maximum steps to run.</param>
+        public void Run(int steps, int stopInput, bool stopLogic)
         {
             byte direction = 0x00;
-            if (maximumSteps < 0)
+            if (steps < 0)
             {
                 direction = 0x01;
-                maximumSteps *= -1;
+                steps *= -1;
             }
-            Debug.WriteLine(GetByte(maximumSteps, 0).ToString("X2") + GetByte(maximumSteps, 1).ToString("X2") + GetByte(maximumSteps, 2).ToString("X2") + GetByte(maximumSteps, 3).ToString("X2"));
+            Debug.WriteLine(GetByte(steps, 0).ToString("X2") + GetByte(steps, 1).ToString("X2") + GetByte(steps, 2).ToString("X2") + GetByte(steps, 3).ToString("X2"));
 
             int logic = stopLogic ? 0x01 : 0x00;
 
-            byte[] data = new byte[8] { 0x08, direction, Convert.ToByte(stopInput), Convert.ToByte(logic), GetByte(maximumSteps, 0), GetByte(maximumSteps, 1), GetByte(maximumSteps, 2), GetByte(maximumSteps, 3), };
+            byte[] data = new byte[8] { 0x08, direction, Convert.ToByte(stopInput + 1), Convert.ToByte(logic), GetByte(steps, 0), GetByte(steps, 1), GetByte(steps, 2), GetByte(steps, 3), };
             SendMessage(data);
         }
 
