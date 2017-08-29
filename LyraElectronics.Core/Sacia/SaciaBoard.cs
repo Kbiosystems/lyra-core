@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace LyraElectronics
+namespace LyraElectronics.Sacia
 {
     /// <summary>
     ///     An implementation of the <see cref="CanBoard"/> 
@@ -25,34 +25,20 @@ namespace LyraElectronics
         public int Position { get; private set; }
 
         /// <summary>
-        ///     The current value of the first input.
+        /// Gets the inputs.
         /// </summary>
-        public bool Input1 { get; private set; }
+        /// <value>
+        /// The inputs.
+        /// </value>
+        public SaciaInputs Inputs { get; private set; }
 
         /// <summary>
-        ///     The current value of the second input.
+        /// Gets the outputs.
         /// </summary>
-        public bool Input2 { get; private set; }
-
-        /// <summary>
-        ///     The current value of the third input.
-        /// </summary>
-        public bool Input3 { get; private set; }
-
-        /// <summary>
-        ///     The current value of the first output.
-        /// </summary>
-        public bool Output1 { get; private set; }
-
-        /// <summary>
-        ///     The current value of the second output.
-        /// </summary>
-        public bool Output2 { get; private set; }
-
-        /// <summary>
-        ///     The current value of the third output.
-        /// </summary>
-        public bool Output3 { get; private set; }
+        /// <value>
+        /// The outputs.
+        /// </value>
+        public SaciaOutputs Outputs { get; private set; }
 
         /// <summary>
         ///     Indicates whether this <see cref="SaciaBoard"/> is disabled.
@@ -105,22 +91,22 @@ namespace LyraElectronics
         /// <summary>
         ///     Occurs when [input changed].
         /// </summary>
-        public event InputChangedEventHandler InputChanged;
+        public event EventHandler<InputChangedEventArgs> InputChanged;
 
         /// <summary>
         ///     Occurs when [output changed].
         /// </summary>
-        public event OutputChangedEventHandler OutputChanged;
+        public event EventHandler<OutputChangedEventArgs> OutputChanged;
 
         /// <summary>
         ///     Occurs when [motor started].
         /// </summary>
-        public event MotorStartedEventHandler MotorStarted;
+        public event EventHandler<MotorStartedEventArgs> MotorStarted;
 
         /// <summary>
         ///     Occurs when [motor stopped].
         /// </summary>
-        public event MotorStoppedEventHandler MotorStopped;
+        public event EventHandler<MotorStoppedEventArgs> MotorStopped;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SaciaBoard"/> class.
@@ -130,11 +116,14 @@ namespace LyraElectronics
         ///     representation of its binary dip switch position
         /// </param>
         /// <param name="controller">
-        ///     The <see cref="ICanController"/> associated with this board. 
+        ///     The <see cref="CanController"/> associated with this board. 
         /// </param>
-        public SaciaBoard(int sequenceNumber, ICanController controller) 
+        public SaciaBoard(int sequenceNumber, CanController controller) 
             : base(sequenceNumber, controller)
-        { }
+        {
+            Inputs = new SaciaInputs();
+            Outputs = new SaciaOutputs();
+        }
 
         /// <summary>
         ///     Send <see cref="CanMessage"/> to enable this board.
@@ -199,10 +188,32 @@ namespace LyraElectronics
         /// <param name="value">The output value. If true, on, else off</param>
         public void SetOutput(int output, bool value)
         {
-            bool out1 = output == 1 ? value : Output1;
-            bool out2 = output == 2 ? value : Output2;
-            bool out3 = output == 3 ? value : Output3;
+            bool out1 = output == 0 ? value : Outputs.Output1;
+            bool out2 = output == 1 ? value : Outputs.Output2;
+            bool out3 = output == 2 ? value : Outputs.Output3;
 
+            SetOutputs(out1, out2, out3);
+        }
+
+        /// <summary>
+        ///     Send <see cref="CanMessage"/> to set 
+        ///     all outputs to on/off
+        /// </summary>
+        /// <param name="value">The output value. If true, on, else off</param>
+        public void SetAllOutputs(bool value)
+        {
+            SetOutputs(value, value, value);
+        }
+
+        /// <summary>
+        ///     Send <see cref="CanMessage"/> to set 
+        ///     the specified outputs to on/off
+        /// </summary>
+        /// <param name="out1">The output value for output 1. If true, on, else off</param>
+        /// <param name="out2">The output value for output 2. If true, on, else off</param>
+        /// <param name="out3">The output value for output 3. If true, on, else off</param>
+        public void SetOutputs(bool out1, bool out2, bool out3)
+        {
             byte[] data = new byte[8] { 0x04, 0x00, (byte)(out1 ? 0x01 : 0x00), (byte)(out2 ? 0x01 : 0x00), (byte)(out3 ? 0x01 : 0x00), 0x00, 0x00, 0x00, };
             SendMessage(data);
         }
@@ -295,41 +306,15 @@ namespace LyraElectronics
             OverTemperature = (data[5] & 0x82) > 0;
 
             // set inputs and invoke input changed event where applicable
-            if (Input1 != (data[4] & 0x01) > 0)
+            foreach (var args in Inputs.Parse(data[4]))
             {
-                Input1 = (data[4] & 0x01) > 0;
-                InputChanged?.Invoke(this, new InputChangedEventArgs(1, !Input1, Input1));
-            }
-
-            if (Input2 != (data[4] & 0x02) > 0)
-            {
-                Input2 = (data[4] & 0x02) > 0;
-                InputChanged?.Invoke(this, new InputChangedEventArgs(2, !Input2, Input2));
-            }
-
-            if (Input3 != (data[4] & 0x04) > 0)
-            {
-                Input3 = (data[4] & 0x04) > 0;
-                InputChanged?.Invoke(this, new InputChangedEventArgs(3, !Input3, Input3));
+                InputChanged?.Invoke(this, args);
             }
 
             // set outputs and invoke output changed event where applicable
-            if (Output1 != (data[6] & 0x01) > 0)
+            foreach (var args in Outputs.Parse(data[6]))
             {
-                Output1 = (data[6] & 0x01) > 0;
-                OutputChanged?.Invoke(this, new OutputChangedEventArgs(1, !Output1, Output1));
-            }
-
-            if (Output2 != (data[6] & 0x02) > 0)
-            {
-                Output2 = (data[6] & 0x02) > 0;
-                OutputChanged?.Invoke(this, new OutputChangedEventArgs(2, !Output2, Output2));
-            }
-
-            if (Output3 != (data[6] & 0x04) > 0)
-            {
-                Output3 = (data[6] & 0x04) > 0;
-                OutputChanged?.Invoke(this, new OutputChangedEventArgs(3, !Output3, Output3));
+                OutputChanged?.Invoke(this, args);
             }
 
             // set running value and invoke stop/start events
@@ -338,11 +323,11 @@ namespace LyraElectronics
                 Running = (data[5] & 0x01) > 0;
                 if (Running)
                 {
-                    MotorStarted?.Invoke(this);
+                    MotorStarted?.Invoke(this, new MotorStartedEventArgs());
                 }
                 else
                 {
-                    MotorStopped?.Invoke(this);
+                    MotorStopped?.Invoke(this, new MotorStoppedEventArgs());
                 }
             }
         }

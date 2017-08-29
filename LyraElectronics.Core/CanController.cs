@@ -9,12 +9,12 @@ namespace LyraElectronics
     ///     The CAN controller interface. Pass to <see cref="CanBoard"/> 
     ///     class for event based status parsing.
     /// </summary>
-    public interface ICanController
+    public abstract class CanController
     {
         /// <summary>
         ///     Ocurrs when a CAN message is recieved.
         /// </summary>
-        event CanMessageRecievedEventHandler CanMessageRecieved;
+        public event EventHandler<CanMessageRecievedEventArgs> CanMessageRecieved;
 
         /// <summary>
         ///     Opens the CAN channel. Baud rate defaults to 
@@ -24,12 +24,12 @@ namespace LyraElectronics
         ///     An integer representing the baud rate for the 
         ///     CAN interface.
         /// </param>
-        void OpenChannel(int baudRate = 250);
+        public abstract void OpenChannel(int baudRate = 250);
 
         /// <summary>
         ///     Closes the CAN channel.
         /// </summary>
-        void CloseChannel();
+        public abstract void CloseChannel();
 
         /// <summary>
         ///     Sends a <see cref="CanMessage"/> over the 
@@ -38,6 +38,19 @@ namespace LyraElectronics
         /// <param name="message">
         ///     The <see cref="CanMessage"/> to send.
         /// </param>
-        void SendMessage(CanMessage message);
+        public abstract void SendMessage(CanMessage message);
+
+        /// <summary>
+        ///     Should be called when a can message is recieved 
+        ///     by the controller. This method warps the logic 
+        ///     required for the can board parsing to occur internally.
+        /// </summary>
+        /// <param name="message">
+        ///     The <see cref="CanMessage"/> received.
+        /// </param>
+        protected virtual void OnCanMessageRecieved(CanMessage message)
+        {
+            CanMessageRecieved?.Invoke(this, new CanMessageRecievedEventArgs(message));
+        }
     }
 }

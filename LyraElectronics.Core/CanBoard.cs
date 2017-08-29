@@ -11,10 +11,10 @@ namespace LyraElectronics
     public abstract class CanBoard
     {
         /// <summary>
-        ///     The <see cref="ICanController"/> implementation 
+        ///     The <see cref="CanController"/> implementation 
         ///     associated with this board.
         /// </summary>
-        protected internal ICanController _controller;
+        protected internal CanController _controller;
 
         /// <summary>
         ///     An Int32 representation of hexadecimal addressing 
@@ -34,7 +34,7 @@ namespace LyraElectronics
         ///     Mio board with the same numeric sequence number. Regarding dip 
         ///     switches see the individual Lyra board documentation.
         /// </remarks>
-        public int SequenceNumber { get; private set; }
+        public int SequenceNumber { get; internal set; }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="CanBoard"/> class.
@@ -56,18 +56,18 @@ namespace LyraElectronics
         ///     representation of its binary dip switch position
         /// </param>
         /// <param name="controller">
-        ///     The <see cref="ICanController"/> associated with this board. 
+        ///     The <see cref="CanController"/> associated with this board. 
         /// </param>
-        public CanBoard(int sequenceNumber, ICanController controller)
+        public CanBoard(int sequenceNumber, CanController controller)
             : this (sequenceNumber)
         {
             _controller = controller;
 
-            _controller.CanMessageRecieved += (s, m) =>
+            _controller.CanMessageRecieved += (sender, args) =>
             {
-                if (m.Address == ((Range | (SequenceNumber << 4)) | 8))
+                if (args.Message.Address == ((Range | (SequenceNumber << 4)) | 8))
                 {
-                    Parse(m.Data);
+                    Parse(args.Message.Data);
                 }
             };
         }
