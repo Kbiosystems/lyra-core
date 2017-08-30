@@ -297,7 +297,14 @@ namespace LyraElectronics.Sacia
         /// <param name="data">The data to parse.</param>
         protected internal override void Parse(byte[] data)
         {
-            Position = (((int)data[3]) << 32) | (((int)data[2]) << 16) | (((int)data[1]) << 8) | (int)data[0];
+            if (data[3] > 0x7F)
+            {
+                Position = -((~data[3] & 0x000000FF) << 32 | (~data[2] & 0x000000FF) << 16 | (~data[1] & 0x000000FF) << 8 | (~data[0] & 0x000000FF));
+            }
+            else
+            {
+                Position = data[3] << 32 | data[2] << 16 | data[1] << 8 | data[0];
+            }
 
             Disabled = (data[5] & 0x80) > 0;
             SpeedSet = !((data[5] & 0x40) > 0);
