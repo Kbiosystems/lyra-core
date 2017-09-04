@@ -41,15 +41,22 @@ namespace LyraElectronics.Sacia
 
             controller.CanMessageRecieved += (sender, args) =>
             {
-                if (PotentialSequenceNumbers.Any(i => args.Message.Address == ((Range | (i << 4)) | 8)))
+                if (args.Message.Address == ((Range | (SequenceNumber << 4)) | 8))
                 {
-                    int oldNumber = SequenceNumber;
-
-                    SequenceNumber = PotentialSequenceNumbers.First(i => args.Message.Address == ((Range | (i << 4)) | 8));
-
-                    SequenceNumberChanged?.Invoke(this, new SequenceNumberChangedEventArgs(oldNumber, SequenceNumber));
-
                     Parse(args.Message.Data);
+                }
+                else
+                {
+                    if (PotentialSequenceNumbers.Any(i => args.Message.Address == ((Range | (i << 4)) | 8)))
+                    {
+                        int oldNumber = SequenceNumber;
+
+                        SequenceNumber = PotentialSequenceNumbers.First(i => args.Message.Address == ((Range | (i << 4)) | 8));
+
+                        SequenceNumberChanged?.Invoke(this, new SequenceNumberChangedEventArgs(oldNumber, SequenceNumber));
+
+                        Parse(args.Message.Data);
+                    }
                 }
             };
         }
