@@ -151,22 +151,19 @@ namespace LyraElectronics.Extensions
         /// <param name="timeout">The time to wait. If time reach <see cref="TimeoutException"/> will be thrown</param>
         /// <returns></returns>
         /// <exception cref="System.TimeoutException">The operation has timed out waiting for an output to be set.</exception>
-        public static async Task RunUntilStopped(this SaciaBoard board, double distance, TimeSpan timeout)
+        public static async Task RunUntilStopped(this SaciaBoard board, int distance, TimeSpan timeout)
         {
             var expectedPos = board.Position + distance;
 
-            var task = board.WaitForStopped(CancellationToken.None, timeout);
-            var task2 = board.WaitForPositionReached(expectedPos, timeout);
+            var waitForStopped = board.WaitForStopped(CancellationToken.None, timeout);
+            var waitForPos = board.WaitForPositionReached(expectedPos, timeout);
 
-            if (await Task.WhenAny(task, task2).ConfigureAwait(false) == task)
-            {
-                // re-await so any cancellations or exceptions can be rethrown
-                await task;
-            }
-            else
-            {
-                await task2;
-            }
+            board.Run(distance);
+
+            var task = await Task.WhenAny(waitForStopped, waitForPos).ConfigureAwait(false);
+
+            // re-await so any cancellations or exceptions can be rethrown
+            await task;           
         }
 
         /// <summary>
@@ -184,7 +181,7 @@ namespace LyraElectronics.Extensions
         /// </param>
         /// <returns></returns>
         /// <exception cref="System.TimeoutException">The operation has timed out waiting for an output to be set.</exception>
-        public static async Task RunUntilStopped(this SaciaBoard board, double maxDistance, int input, bool value, TimeSpan timeout, bool errorIfMaxDistanceReached = true)
+        public static async Task RunUntilStopped(this SaciaBoard board, int maxDistance, int input, bool value, TimeSpan timeout, bool errorIfMaxDistanceReached = true)
         {
             var maxPos = board.Position + maxDistance;
 
@@ -192,20 +189,19 @@ namespace LyraElectronics.Extensions
             var motorStopped = board.WaitForStopped(CancellationToken.None, timeout);
             var waitForPos = board.WaitForPositionReached(maxPos, timeout);
 
+            board.Run(maxDistance, input, value);
+
             var task = await Task.WhenAny(waitForInput, motorStopped, waitForPos);
-            if (task == waitForInput)
-            {
-                await task;
-            }
-            else
+
+            if (board.Inputs[input] != value)
             {
                 if (board.Position == maxPos && errorIfMaxDistanceReached)
                 {
                     throw new InvalidOperationException("Max distance reached before input detected.");
                 }
-
-                await task;
             }
+
+            await task;
         }
 
         private static async Task WaitForPositionReached(this SaciaBoard board, double motorPosition, TimeSpan timeout)
