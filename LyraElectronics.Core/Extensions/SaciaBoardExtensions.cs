@@ -141,6 +141,85 @@ namespace LyraElectronics.Extensions
                 }
             }
         }
+
+        /// <summary>
+        ///     Wait for the given <see cref="SaciaBoard"/> motor
+        ///     to reach its stopped position.
+        /// </summary>
+        /// <param name="board">The <see cref="SaciaBoard"/></param>
+        /// <param name="distance">The distance to run the motor</param>
+        /// <param name="timeout">The time to wait. If time reach <see cref="TimeoutException"/> will be thrown</param>
+        /// <returns></returns>
+        /// <exception cref="System.TimeoutException">The operation has timed out waiting for an output to be set.</exception>
+        public static async Task RunUntilStopped(this SaciaBoard board, double distance, TimeSpan timeout)
+        {
+            var expectedPos = board.Position + distance;
+
+            var task = board.WaitForStopped(CancellationToken.None, timeout);
+            var task2 = board.WaitForPositionReached(expectedPos, timeout);
+
+            if (await Task.WhenAny(task, task2).ConfigureAwait(false) == task)
+            {
+                // re-await so any cancellations or exceptions can be rethrown
+                await task;
+            }
+            else
+            {
+                await task2;
+            }
+        }
+
+        /// <summary>
+        ///     Wait for the given <see cref="SaciaBoard"/> motor
+        ///     to reach its stopped position.
+        /// </summary>
+        /// <param name="board">The <see cref="SaciaBoard"/></param>
+        /// <param name="maxDistance">The maximum distance to run the motor.</param>
+        /// <param name="input">The input to wait for.</param>
+        /// <param name="value">The expected value of the input.</param>
+        /// <param name="timeout">The time to wait. If time reach <see cref="TimeoutException"/> will be thrown</param>
+        /// <param name="errorIfMaxDistanceReached">
+        ///     If true, throw <see cref="InvalidOperationException"/> 
+        ///     if max distance reached before input detected
+        /// </param>
+        /// <returns></returns>
+        /// <exception cref="System.TimeoutException">The operation has timed out waiting for an output to be set.</exception>
+        public static async Task RunUntilStopped(this SaciaBoard board, double maxDistance, int input, bool value, TimeSpan timeout, bool errorIfMaxDistanceReached = true)
+        {
+            var maxPos = board.Position + maxDistance;
+
+            var waitForInput = board.WaitForInput(input, value, CancellationToken.None, timeout);
+            var motorStopped = board.WaitForStopped(CancellationToken.None, timeout);
+            var waitForPos = board.WaitForPositionReached(maxPos, timeout);
+
+            var task = await Task.WhenAny(waitForInput, motorStopped, waitForPos);
+            if (task == waitForInput)
+            {
+                await task;
+            }
+            else
+            {
+                if (board.Position == maxPos && errorIfMaxDistanceReached)
+                {
+                    throw new InvalidOperationException("Max distance reached before input detected.");
+                }
+
+                await task;
+            }
+        }
+
+        private static async Task WaitForPositionReached(this SaciaBoard board, double motorPosition, TimeSpan timeout)
+        {
+            DateTime start = DateTime.UtcNow;
+            while (board.Position != motorPosition)
+            {
+                if (start + timeout < DateTime.UtcNow)
+                {
+                    throw new TimeoutException("The operation has timed out waiting for the motor to complete.");
+                }
+                await Task.Delay(20);
+            }
+        }
     }
 }
 #endif
