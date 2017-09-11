@@ -83,23 +83,26 @@ namespace LyraElectronics.Extensions
         /// <exception cref="System.TimeoutException">The operation has timed out waiting for an input to be set.</exception>
         public static async Task WaitForInput(this SaciaBoard board, int input, bool value, CancellationToken token, TimeSpan timeout)
         {
-            bool complete = false;
-            board.InputChanged += (o, e) =>
+            if (board.Inputs[input] != value)
             {
-                if (e.Input == input && e.NewValue == value)
+                bool complete = false;
+                board.InputChanged += (o, e) =>
                 {
-                    complete = true;
-                }
-            };
+                    if (e.Input == input && e.NewValue == value)
+                    {
+                        complete = true;
+                    }
+                };
 
-            DateTime start = DateTime.UtcNow;
-            while (!complete)
-            {
-                if (DateTime.UtcNow > start + timeout)
+                DateTime start = DateTime.UtcNow;
+                while (!complete)
                 {
-                    throw new TimeoutException("The operation has timed out waiting for an input to be set.");
+                    if (DateTime.UtcNow > start + timeout)
+                    {
+                        throw new TimeoutException("The operation has timed out waiting for an input to be set.");
+                    }
+                    await Task.Delay(100).ConfigureAwait(false);
                 }
-                await Task.Delay(100).ConfigureAwait(false);
             }
         }
 
@@ -116,25 +119,27 @@ namespace LyraElectronics.Extensions
         /// <exception cref="System.TimeoutException">The operation has timed out waiting for an output to be set.</exception>
         public static async Task WaitForOutput(this SaciaBoard board, int output, bool value, CancellationToken token, TimeSpan timeout)
         {
-            bool complete = false;
-            board.OutputChanged += (o, e) =>
+            if (board.Outputs[output] != value)
             {
-                if (e.Output == output && e.NewValue == value)
+                bool complete = false;
+                board.OutputChanged += (o, e) =>
                 {
-                    complete = true;
-                }
-            };
+                    if (e.Output == output && e.NewValue == value)
+                    {
+                        complete = true;
+                    }
+                };
 
-            DateTime start = DateTime.UtcNow;
-            while (!complete)
-            {
-                if (DateTime.UtcNow > start + timeout)
+                DateTime start = DateTime.UtcNow;
+                while (!complete)
                 {
-                    throw new TimeoutException("The operation has timed out waiting for an output to be set.");
+                    if (DateTime.UtcNow > start + timeout)
+                    {
+                        throw new TimeoutException("The operation has timed out waiting for an output to be set.");
+                    }
+                    await Task.Delay(100).ConfigureAwait(false);
                 }
-                await Task.Delay(100).ConfigureAwait(false);
             }
-
         }
     }
 }
