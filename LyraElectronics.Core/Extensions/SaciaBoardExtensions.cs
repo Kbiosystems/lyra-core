@@ -46,7 +46,7 @@ namespace LyraElectronics.Extensions
         /// <returns></returns>
         /// <exception cref="System.TimeoutException">The operation has timed out waiting for the motor to complete.</exception>
         public static async Task WaitForStopped(this SaciaBoard board, CancellationToken token, TimeSpan timeout)
-        {
+        {       
             var task = TaskExtensions.FromEvent<EventHandler<MotorStoppedEventArgs>, MotorStoppedEventArgs>(
                 (complete, cancel, reject) => // get handler
                         (sender, args) => complete(args),
@@ -207,7 +207,7 @@ namespace LyraElectronics.Extensions
         private static async Task WaitForPositionReached(this SaciaBoard board, double motorPosition, TimeSpan timeout)
         {
             DateTime start = DateTime.UtcNow;
-            while (board.Position != motorPosition)
+            while (board.Position > motorPosition + 1 || board.Position < motorPosition - 1) // account for potential half step rounding
             {
                 if (start + timeout < DateTime.UtcNow)
                 {
