@@ -38,9 +38,9 @@
     - ps: .\install.ps1
   build_script:
   - ps: .\build.ps1
-  build:
-    project: LyraElectronics.Core.sln
-    verbosity: minimal
+#  build:
+#    project: LyraElectronics.Core.sln
+#    verbosity: minimal
   artifacts:
   - path: '**\LyraElectronics.Core.*.nupkg'
 
