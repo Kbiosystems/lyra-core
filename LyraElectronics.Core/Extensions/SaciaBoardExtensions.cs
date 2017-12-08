@@ -204,6 +204,28 @@ namespace LyraElectronics.Extensions
             await task;
         }
 
+        /// <summary>
+        ///     Wait for the given <see cref="SaciaBoard"/> motor
+        ///     to reach its stopped position.
+        /// </summary>
+        /// <param name="board">The <see cref="SaciaBoard"/></param>
+        /// <param name="timeout">The time to wait for the zero value to be set. If time reach <see cref="TimeoutException"/> will be thrown</param>
+        /// <exception cref="System.TimeoutException">The operation has timed out waiting for a zero value to be set.</exception>
+        public static async Task ZeroSafe(this SaciaBoard board, TimeSpan timeout)
+        {
+            board.Zero();
+
+            var start = DateTime.UtcNow;
+            while (board.Position != 0)
+            {
+                if (start + timeout < DateTime.UtcNow)
+                {
+                    throw new InvalidOperationException("The operation has timed out waiting for a zero value to be set.");
+                }
+                await Task.Delay(200);
+            }
+        }
+
         private static async Task WaitForPositionReached(this SaciaBoard board, double motorPosition, TimeSpan timeout)
         {
             DateTime start = DateTime.UtcNow;
