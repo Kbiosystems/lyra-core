@@ -14,15 +14,20 @@ namespace LyraElectronics.Sacia
     /// <seealso cref="LyraElectronics.CanBoard" />
     public class SaciaBoard : CanBoard
     {
+        private int _boardPosition;
+        private int _softwarePosition;
+
         /// <summary>
         ///     The hex addressing range of the board.
         /// </summary>
         internal override int Range { get { return 0x600; } }
 
+        public bool UseSoftwarePosition { get; set; }
+
         /// <summary>
         ///     The current motor position.
         /// </summary>
-        public int Position { get; private set; }
+        public int Position { get { return UseSoftwarePosition ? _softwarePosition : _boardPosition; } private set { _boardPosition = value; } }
 
         /// <summary>
         /// Gets the inputs.
@@ -142,6 +147,9 @@ namespace LyraElectronics.Sacia
         {
             byte[] data = new byte[8] { 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
             SendMessage(data);
+
+            // set software position
+            _softwarePosition = 0;
         }
 
         /// <summary>
@@ -246,6 +254,9 @@ namespace LyraElectronics.Sacia
             Debug.WriteLine(GetByte(position, 0).ToString("X1") + GetByte(position, 1).ToString("X1") + GetByte(position, 2).ToString("X1") + GetByte(position, 3).ToString("X1"));
             byte[] data = new byte[8] { 0x01, 0x00, GetByte(position, 0), GetByte(position, 1), GetByte(position, 2), GetByte(position, 3), 0x0, 0x0 };
             SendMessage(data);
+
+            // set software position
+            _softwarePosition = position;
         }
 
         /// <summary>
@@ -268,6 +279,9 @@ namespace LyraElectronics.Sacia
         /// <param name="steps">The maximum steps to run.</param>
         public void Run(int steps, int stopInput, bool stopLogic)
         {
+            // set software position -> have to assume full run (when running using software pos, always zero or assume position if running to input
+            _softwarePosition += steps;
+
             byte direction = 0x00;
             if (steps < 0)
             {
@@ -280,6 +294,8 @@ namespace LyraElectronics.Sacia
 
             byte[] data = new byte[8] { 0x08, direction, Convert.ToByte(stopInput + 1), Convert.ToByte(logic), GetByte(steps, 0), GetByte(steps, 1), GetByte(steps, 2), GetByte(steps, 3), };
             SendMessage(data);
+
+
         }
 
         /// <summary>
