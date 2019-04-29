@@ -156,14 +156,29 @@ namespace LyraElectronics.Extensions
             var expectedPos = board.Position + distance;
 
             var waitForStopped = board.WaitForStopped(CancellationToken.None, timeout);
-            var waitForPos = board.WaitForPositionReached(expectedPos, timeout);
 
-            board.Run(distance);
+            if (board.UseSoftwarePosition)
+            { 
 
-            var task = await Task.WhenAny(waitForStopped, waitForPos).ConfigureAwait(false);
+                board.Run(distance);
 
-            // re-await so any cancellations or exceptions can be rethrown
-            await task;           
+                var task = await Task.WhenAny(waitForStopped)
+                    .ConfigureAwait(false);
+
+                // re-await so any cancellations or exceptions can be rethrown
+                await task;
+            }
+            else
+            {
+                var waitForPos = board.WaitForPositionReached(expectedPos, timeout);
+
+                board.Run(distance);
+
+                var task = await Task.WhenAny(waitForStopped, waitForPos).ConfigureAwait(false);
+
+                // re-await so any cancellations or exceptions can be rethrown
+                await task;
+            }         
         }
 
         /// <summary>
@@ -187,21 +202,41 @@ namespace LyraElectronics.Extensions
 
             var waitForInput = board.WaitForInput(input, value, CancellationToken.None, timeout);
             var motorStopped = board.WaitForStopped(CancellationToken.None, timeout);
-            var waitForPos = board.WaitForPositionReached(maxPos, timeout);
 
-            board.Run(maxDistance, input, value);
-
-            var task = await Task.WhenAny(waitForInput, motorStopped, waitForPos);
-
-            if (board.Inputs[input] != value)
+            if (board.UseSoftwarePosition)
             {
-                if (board.Position == maxPos && errorIfMaxDistanceReached)
-                {
-                    throw new InvalidOperationException("Max distance reached before input detected.");
-                }
-            }
+                board.Run(maxDistance, input, value);
 
-            await task;
+                var task = await Task.WhenAny(waitForInput, motorStopped).ConfigureAwait(false);
+
+                //if (board.Inputs[input] != value)
+                //{
+                //    if (board.Position == maxPos && errorIfMaxDistanceReached)
+                //    {
+                //        throw new InvalidOperationException("Max distance reached before input detected.");
+                //    }
+                //}
+
+                await task;
+            }
+            else
+            {
+                var waitForPos = board.WaitForPositionReached(maxPos, timeout);
+
+                board.Run(maxDistance, input, value);
+
+                var task = await Task.WhenAny(waitForInput, motorStopped, waitForPos);
+
+                if (board.Inputs[input] != value)
+                {
+                    if (board.Position == maxPos && errorIfMaxDistanceReached)
+                    {
+                        throw new InvalidOperationException("Max distance reached before input detected.");
+                    }
+                }
+
+                await task;
+            }
         }
 
         /// <summary>
